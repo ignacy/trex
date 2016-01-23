@@ -1,0 +1,8 @@
+#!/bin/bash
+elixir -r lib/trex_server.ex --detached --no-halt -e "TrexServer.accept(4040)"
+pid=$!
+
+sleep 1 # wait to warm up
+
+ruby acceptance_tests/acceptance_tests.rb
+kill -9 $pid

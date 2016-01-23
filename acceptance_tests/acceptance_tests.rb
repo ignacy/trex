@@ -2,10 +2,10 @@ require 'minitest/autorun'
 require 'net/telnet'
 
 describe 'trex' do
-  let(:telnet) { Net::Telnet::new("Host" => "127.0.0.1", "Port" => 6379) }
+  let(:telnet) { Net::Telnet::new("Port" => 4040) }
 
   it 'ping-pongs' do
-    send_command("PING").must_equal "+PONG\n"
+    send_command("PING").must_equal "PING\n"
   end
 
   def send_command(cmd)
