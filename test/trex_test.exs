@@ -15,12 +15,17 @@ defmodule TrexTest do
   test "server interaction", %{socket: socket} do
     assert send_and_recv(socket, "PING\r\n") == "PONG\r\n"
 
-    assert send_and_recv(socket, "NOT_IMPLEMENT\r\n") == "UNKNOWN COMMAND\r\n"
+    assert send_and_recv(socket, "NOT_IMPLEMENTED\r\n") == "UNKNOWN COMMAND\r\n"
+
+    assert send_and_recv(socket, "SET SOMEKEY SOMEVALUE\r\n") == "OK\r\n"
+    assert send_and_recv(socket, "GET SOMEKEY\r\n") == "SOMEVALUE\r\n"
   end
 
   defp send_and_recv(socket, command) do
     :ok = :gen_tcp.send(socket, command)
-    {:ok, data} = :gen_tcp.recv(socket, 0, 1000)
-    data
+    case :gen_tcp.recv(socket, 0, 1000) do
+      {:ok, data} -> data
+      {:error, err} -> err
+    end
   end
 end

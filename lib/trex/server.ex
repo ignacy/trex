@@ -1,6 +1,11 @@
 defmodule Trex.Server do
   require Logger
 
+  alias Trex.CommandParser
+  alias Trex.CommandRunner
+
+  alias Trex.Server.TaskSupervisor
+
   @doc """
   Starts accepting connections on the given `port`.
   """
@@ -8,32 +13,35 @@ defmodule Trex.Server do
     {:ok, socket} = :gen_tcp.listen(port,
     [:binary, packet: :line, active: false, reuseaddr: true])
     Logger.info "Accepting connections on port #{port}"
-    loop_acceptor(socket)
+
+    loop_acceptor(socket, %{})
   end
 
-  defp loop_acceptor(socket) do
+  defp loop_acceptor(socket, storage) do
     {:ok, client} = :gen_tcp.accept(socket)
-    {:ok, pid} = Task.Supervisor.start_child(Trex.Server.TaskSupervisor, fn -> serve(client) end)
+    {:ok, pid} = Task.Supervisor.start_child TaskSupervisor, fn ->
+      serve(client, storage)
+    end
     :ok = :gen_tcp.controlling_process(client, pid)
-    loop_acceptor(socket)
+    loop_acceptor(socket, storage)
   end
 
-  defp serve(socket) do
-    msg =
+  defp serve(socket, storage) do
+    {msg, new_storage} =
     case read_line(socket) do
       {:ok, data} ->
-        case Trex.CommandParser.parse(data) do
+        case CommandParser.parse(data) do
           {:ok, command} ->
-            Trex.CommandRunner.run(command)
+            CommandRunner.run(command, storage)
           {:error, _} = err ->
-            err
+            {err, storage}
         end
       {:error, _} = err ->
-        err
+        {err, storage}
     end
 
     write_line(socket, msg)
-    serve(socket)
+    serve(socket, new_storage)
   end
 
   defp read_line(socket) do
@@ -41,7 +49,7 @@ defmodule Trex.Server do
   end
 
   defp write_line(socket, {:ok, command}) do
-    :gen_tcp.send(socket, command)
+    :gen_tcp.send(socket, command <> "\r\n")
   end
 
   defp write_line(socket, {:error, :unknown_command}) do
