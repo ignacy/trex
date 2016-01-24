@@ -15,6 +15,12 @@ describe 'trex' do
     end
   end
 
+  it 'updates previously set key' do
+    send_command("SET KEY VALUE").must_equal "OK\n"
+    send_command("SET KEY OTHER_VALUE").must_equal "OK\n"
+    send_command("GET KEY").must_equal "OTHER_VALUE\n"
+  end
+
   def send_command(cmd)
     telnet.cmd("String" => cmd, "Match" => /\n/)
   end

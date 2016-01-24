@@ -1,10 +1,9 @@
 defmodule Trex.Server do
+  alias Trex.{CommandParser, CommandRunner, Server.TaskSupervisor}
   require Logger
 
-  alias Trex.CommandParser
-  alias Trex.CommandRunner
+  @storage_adapter Map
 
-  alias Trex.Server.TaskSupervisor
 
   @doc """
   Starts accepting connections on the given `port`.
@@ -14,7 +13,7 @@ defmodule Trex.Server do
     [:binary, packet: :line, active: false, reuseaddr: true])
     Logger.info "Accepting connections on port #{port}"
 
-    loop_acceptor(socket, %{})
+    loop_acceptor(socket, @storage_adapter.new)
   end
 
   defp loop_acceptor(socket, storage) do
@@ -32,7 +31,7 @@ defmodule Trex.Server do
       {:ok, data} ->
         case CommandParser.parse(data) do
           {:ok, command} ->
-            CommandRunner.run(command, storage)
+            CommandRunner.run(command, @storage_adapter, storage)
           {:error, _} = err ->
             {err, storage}
         end
