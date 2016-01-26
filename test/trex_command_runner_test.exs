@@ -3,6 +3,6 @@ defmodule TrexCommandRunnerTest do
   doctest Trex.CommandRunner
 
   test "ping" do
-    assert Trex.CommandRunner.run(:ping, %{}) == {{:ok, "PONG"}, %{}}
+    assert Trex.CommandRunner.run(:ping, Map, %{}) == {{:ok, "PONG"}, %{}}
   end
 end

@@ -3,8 +3,8 @@ defmodule Trex.CommandRunner do
     {{:ok, "PONG"}, storage}
   end
 
-  def run({:get, key}, _storage_adapter, storage) do
-    {{:ok, "#{storage[key]}"}, storage}
+  def run({:get, key}, storage_adapter, storage) do
+    {{:ok, "#{storage_adapter.get(storage, key)}"}, storage}
   end
 
   def run({:set, key, value}, storage_adapter, storage) do

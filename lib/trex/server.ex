@@ -1,9 +1,8 @@
 defmodule Trex.Server do
-  alias Trex.{CommandParser, CommandRunner, Server.TaskSupervisor}
+  alias Trex.{CommandParser, CommandRunner, WriteAheadLog, Server.TaskSupervisor}
   require Logger
 
-  @storage_adapter Map
-
+  @storage_adapter WriteAheadLog
 
   @doc """
   Starts accepting connections on the given `port`.

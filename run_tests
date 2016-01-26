@@ -17,3 +17,5 @@ until is_server_up; do
 done
 
 ruby acceptance_tests/acceptance_tests.rb
+
+#rm trex_data
