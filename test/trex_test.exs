@@ -19,6 +19,8 @@ defmodule TrexTest do
 
     assert send_and_recv(socket, "SET SOMEKEY SOMEVALUE\r\n") == "OK\r\n"
     assert send_and_recv(socket, "GET SOMEKEY\r\n") == "SOMEVALUE\r\n"
+
+    assert send_and_recv(socket, "LIST\r\n") =~ "SOMEKEY\r\n"
   end
 
   defp send_and_recv(socket, command) do

@@ -3,11 +3,11 @@ defmodule Trex.WriteAheadLog do
 
   alias Trex.WriteAheadLog
 
-  def new(logfile \\ "trex_data") do # ensure file exists
+  def new(logfile \\ "trex_data") do
     {:ok, file } = File.open(logfile, [:append])
     File.close(file)
 
-    %WriteAheadLog{}
+    %WriteAheadLog{logfile: logfile}
   end
 
   def get(%WriteAheadLog{logfile: logfile}, key) do
@@ -17,7 +17,6 @@ defmodule Trex.WriteAheadLog do
     end
   end
 
-  # 1:SET:KEY:VALUE
   def put(wal = %WriteAheadLog{logfile: logfile}, key, value) do
     {:ok, file} = File.open(logfile, [:append])
     IO.puts(file, wal_line(key, value))

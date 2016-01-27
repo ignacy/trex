@@ -13,6 +13,10 @@ describe 'trex' do
       send_command("SET #{k} #{v}").must_equal "OK\n"
       send_command("GET #{k}").must_equal "#{v}\n"
     end
+
+    keys = send_command("LIST")
+
+    %w(key key1).all? { |k| keys.must_include k }
   end
 
   it 'updates previously set key' do

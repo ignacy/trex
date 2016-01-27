@@ -3,12 +3,10 @@ defmodule TrexWriteAheadLogTest  do
 
   alias Trex.WriteAheadLog
 
-  test "allows using dict behaviour" do
+  test "put, set" do
     t = WriteAheadLog.new
 
-    #assert WriteAheadLog.get(t, :a) == nil
-
-    result = WriteAheadLog.put(t, "b", 4)
+    WriteAheadLog.put(t, "b", 4)
     assert WriteAheadLog.get(t, "b") == "4"
   end
 end
