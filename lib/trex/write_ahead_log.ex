@@ -26,7 +26,7 @@ defmodule Trex.WriteAheadLog do
   end
 
   def keys(%WriteAheadLog{logfile: logfile}) do
-    logfile |> File.stream! |> _keys
+    logfile |> File.stream! |> _keys |> Enum.uniq
   end
 
   defp wal_line(key, value) do
