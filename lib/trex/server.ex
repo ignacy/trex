@@ -1,12 +1,9 @@
 defmodule Trex.Server do
-  alias Trex.{CommandParser, CommandRunner, WriteAheadLog, Server.TaskSupervisor}
+  alias Trex.{CommandEvaluator, WriteAheadLog, Server.TaskSupervisor}
   require Logger
 
   @storage_adapter WriteAheadLog
 
-  @doc """
-  Starts accepting connections on the given `port`.
-  """
   def accept(port) do
     {:ok, socket} = :gen_tcp.listen(port,
     [:binary, packet: :line, active: false, reuseaddr: true])
@@ -28,12 +25,7 @@ defmodule Trex.Server do
     {msg, new_storage} =
     case read_line(socket) do
       {:ok, data} ->
-        case CommandParser.parse(data) do
-          {:ok, command} ->
-            CommandRunner.run(command, @storage_adapter, storage)
-          {:error, _} = err ->
-            {err, storage}
-        end
+        CommandEvaluator.evaluate(data, @storage_adapter, storage)
       {:error, _} = err ->
         {err, storage}
     end
@@ -51,17 +43,14 @@ defmodule Trex.Server do
   end
 
   defp write_line(socket, {:error, :unknown_command}) do
-    # Known error. Write to the client.
     :gen_tcp.send(socket, "UNKNOWN COMMAND\r\n")
   end
 
   defp write_line(_socket, {:error, :closed}) do
-    # The connection was closed, exit politely.
     exit(:shutdown)
   end
 
   defp write_line(socket, {:error, error}) do
-    # Unknown error. Write to the client and exit.
     :gen_tcp.send(socket, "ERROR\r\n")
     exit(error)
   end
