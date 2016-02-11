@@ -3,6 +3,8 @@ defmodule Trex.WriteAheadLog do
 
   alias Trex.WriteAheadLog
 
+  @line_separator "\t"
+
   def new(logfile \\ "trex_data") do
     {:ok, file } = File.open(logfile, [:append])
     File.close(file)
@@ -31,13 +33,13 @@ defmodule Trex.WriteAheadLog do
 
   defp wal_line(key, value) do
     [:os.system_time(:seconds), "SET", key, value]
-    |> Enum.join(":")
+    |> Enum.join(@line_separator)
   end
 
   defp _keys(stream) do
     Enum.map stream, fn(line) ->
       {_timestamp, _operation, key, _value} = line
-      |> String.split(":")
+      |> String.split(@line_separator)
       |> List.to_tuple
 
       key
@@ -47,7 +49,7 @@ defmodule Trex.WriteAheadLog do
   defp search_for_key(stream, sought_key) do
     stream
     |> Enum.map(fn(line) ->
-      line |> String.split(":") |> List.to_tuple
+      line |> String.split(@line_separator) |> List.to_tuple
     end)
     |> Enum.filter(fn({_timestamp, _operation, key, _value}) ->
       key == sought_key
