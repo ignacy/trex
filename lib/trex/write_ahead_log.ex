@@ -14,7 +14,7 @@ defmodule Trex.WriteAheadLog do
 
   def get(%WriteAheadLog{logfile: logfile}, key) do
     case logfile |> File.stream! |> search_for_key(key) do
-      {:ok, {_timestamp, _operation, _key, value}} -> value |> String.rstrip
+      {_timestamp, _operation, _key, value} -> String.rstrip(value)
       _otherwise -> nil
     end
   end
@@ -48,12 +48,12 @@ defmodule Trex.WriteAheadLog do
 
   defp search_for_key(stream, sought_key) do
     stream
-    |> Enum.map(fn(line) ->
-      line |> String.split(@line_separator) |> List.to_tuple
-    end)
-    |> Enum.filter(fn({_timestamp, _operation, key, _value}) ->
-      key == sought_key
-    end)
-    |> Enum.fetch(-1)
+    |> Enum.filter(&non_empty?/1)
+    |> Enum.map(&break_line/1)
+    |> Enum.find(&matches_key(sought_key, &1))
   end
+
+  defp break_line(line), do: line |> String.split(@line_separator) |> List.to_tuple
+  defp matches_key(sought_key, {_timestamp, _operation, key, _value}), do: key == sought_key
+  defp non_empty?(line), do: String.strip(line) != ""
 end
