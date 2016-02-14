@@ -1,8 +1,8 @@
 defmodule TrexServer.CommandEvaluator do
   @message_separator "\t"
 
-  def evaluate(line, storage_adapter, storage) do
-    line |> parse |> _evaluate(storage_adapter, storage)
+  def evaluate(storage_adapter, line) do
+    line |> parse |> _evaluate(storage_adapter)
   end
 
   defp parse(line) do
@@ -15,24 +15,25 @@ defmodule TrexServer.CommandEvaluator do
     end
   end
 
-  defp _evaluate(:ping, _storage_adapter, storage) do
-    {{:ok, "PONG"}, storage}
+  defp _evaluate(:ping, _) do
+    {:ok, "PONG"}
   end
 
-  defp _evaluate({:get, key}, storage_adapter, storage) do
-    {{:ok, "#{storage_adapter.get(storage, key)}"}, storage}
+  defp _evaluate({:get, key}, storage_adapter) do
+    {:ok, "#{storage_adapter.get(key)}"}
   end
 
-  defp _evaluate({:set, key, value}, storage_adapter, storage) do
-    {{:ok, "OK"}, storage_adapter.put(storage, key, value)}
+  defp _evaluate({:set, key, value}, storage_adapter) do
+    storage_adapter.put(key, value)
+    {:ok, "OK"}
   end
 
-  defp _evaluate(:list, storage_adapter, storage) do
-    {{:ok, storage |> storage_adapter.keys |> Enum.join(",")}, storage}
+  defp _evaluate(:list, storage_adapter) do
+    {:ok, storage_adapter.keys |> Enum.join(",")}
   end
 
-  defp _evaluate(error, _storage_adapter, storage) do
-    {error, storage}
+  defp _evaluate(error, _storage) do
+    error
   end
 
   defp cleanup(line) do

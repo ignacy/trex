@@ -1,38 +1,39 @@
 defmodule TrexServer.Server do
-  alias TrexServer.{CommandEvaluator, WriteAheadLog, Server.TaskSupervisor}
+  alias TrexServer.{CommandEvaluator, Server.TaskSupervisor}
   require Logger
 
-  @storage_adapter WriteAheadLog
+  @storage_adapter Application.get_env(:trex_server, :storage_adapter)
 
   def accept(port) do
     {:ok, socket} = :gen_tcp.listen(port,
     [:binary, packet: :line, active: false, reuseaddr: true])
     Logger.info "Accepting connections on port #{port}"
 
-    loop_acceptor(socket, @storage_adapter.new)
+    loop_acceptor(socket)
   end
 
-  defp loop_acceptor(socket, storage) do
+  defp loop_acceptor(socket) do
+    @storage_adapter.start_link
+
     {:ok, client} = :gen_tcp.accept(socket)
     {:ok, pid} = Task.Supervisor.start_child TaskSupervisor, fn ->
-      serve(client, storage)
+      serve(client)
     end
     :ok = :gen_tcp.controlling_process(client, pid)
-    loop_acceptor(socket, storage)
+    loop_acceptor(socket)
   end
 
-  defp serve(socket, storage) do
-    {msg, new_storage} =
+  defp serve(socket) do
+    msg =
     case read_line(socket) do
       {:ok, data} ->
         Logger.info "Processing #{data}"
-        CommandEvaluator.evaluate(data, @storage_adapter, storage)
-      {:error, _} = err ->
-        {err, storage}
+        CommandEvaluator.evaluate(@storage_adapter, data)
+      err -> err
     end
 
     write_line(socket, msg)
-    serve(socket, new_storage)
+    serve(socket)
   end
 
   defp read_line(socket) do
