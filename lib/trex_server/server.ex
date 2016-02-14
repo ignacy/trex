@@ -1,5 +1,5 @@
-defmodule Trex.Server do
-  alias Trex.{CommandEvaluator, WriteAheadLog, Server.TaskSupervisor}
+defmodule TrexServer.Server do
+  alias TrexServer.{CommandEvaluator, WriteAheadLog, Server.TaskSupervisor}
   require Logger
 
   @storage_adapter WriteAheadLog
