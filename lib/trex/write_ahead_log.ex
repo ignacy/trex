@@ -28,7 +28,11 @@ defmodule Trex.WriteAheadLog do
   end
 
   def keys(%WriteAheadLog{logfile: logfile}) do
-    logfile |> File.stream! |> _keys |> Enum.uniq
+    logfile
+    |> File.stream!
+    |> splited
+    |> Enum.into([], fn {_, _, key, _} -> key end)
+    |> Enum.uniq
   end
 
   defp wal_line(key, value) do
@@ -36,24 +40,19 @@ defmodule Trex.WriteAheadLog do
     |> Enum.join(@line_separator)
   end
 
-  defp _keys(stream) do
-    Enum.map stream, fn(line) ->
-      {_timestamp, _operation, key, _value} = line
-      |> String.split(@line_separator)
-      |> List.to_tuple
-
-      key
-    end
-  end
-
   defp search_for_key(stream, sought_key) do
     stream
-    |> Enum.filter(&non_empty?/1)
-    |> Enum.map(&break_line/1)
-    |> Enum.find(&matches_key(sought_key, &1))
+    |> splited
+    |> Enum.find(&matches_key?(sought_key, &1))
   end
 
   defp break_line(line), do: line |> String.split(@line_separator) |> List.to_tuple
-  defp matches_key(sought_key, {_timestamp, _operation, key, _value}), do: key == sought_key
+  defp matches_key?(sought_key, {_timestamp, _operation, key, _value}), do: key == sought_key
   defp non_empty?(line), do: String.strip(line) != ""
+
+  defp splited(stream) do
+    stream
+    |> Enum.filter(&non_empty?/1)
+    |> Enum.map(&break_line/1)
+  end
 end
