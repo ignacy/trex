@@ -1,10 +1,12 @@
 defmodule Trex.CommandEvaluator do
+  @message_separator "\t"
+
   def evaluate(line, storage_adapter, storage) do
     line |> parse |> _evaluate(storage_adapter, storage)
   end
 
   defp parse(line) do
-    case String.split(line) do
+    case cleanup(line) do
       ["PING"] -> :ping
       ["GET", key] -> {:get, key}
       ["SET", key, value] -> {:set, key, value}
@@ -31,5 +33,9 @@ defmodule Trex.CommandEvaluator do
 
   defp _evaluate(error, _storage_adapter, storage) do
     {error, storage}
+  end
+
+  defp cleanup(line) do
+    line |> String.rstrip |> String.split(@message_separator)
   end
 end

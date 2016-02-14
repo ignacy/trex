@@ -3,6 +3,8 @@ defmodule Trex.WriteAheadLog do
 
   alias Trex.WriteAheadLog
 
+  @line_separator "\t"
+
   def new(logfile \\ "trex_data") do
     {:ok, file } = File.open(logfile, [:append])
     File.close(file)
@@ -12,7 +14,7 @@ defmodule Trex.WriteAheadLog do
 
   def get(%WriteAheadLog{logfile: logfile}, key) do
     case logfile |> File.stream! |> search_for_key(key) do
-      {:ok, {_timestamp, _operation, _key, value}} -> value |> String.rstrip
+      {_timestamp, _operation, _key, value} -> String.rstrip(value)
       _otherwise -> nil
     end
   end
@@ -26,32 +28,31 @@ defmodule Trex.WriteAheadLog do
   end
 
   def keys(%WriteAheadLog{logfile: logfile}) do
-    logfile |> File.stream! |> _keys |> Enum.uniq
+    logfile
+    |> File.stream!
+    |> splited
+    |> Enum.into([], fn {_, _, key, _} -> key end)
+    |> Enum.uniq
   end
 
   defp wal_line(key, value) do
     [:os.system_time(:seconds), "SET", key, value]
-    |> Enum.join(":")
-  end
-
-  defp _keys(stream) do
-    Enum.map stream, fn(line) ->
-      {_timestamp, _operation, key, _value} = line
-      |> String.split(":")
-      |> List.to_tuple
-
-      key
-    end
+    |> Enum.join(@line_separator)
   end
 
   defp search_for_key(stream, sought_key) do
     stream
-    |> Enum.map(fn(line) ->
-      line |> String.split(":") |> List.to_tuple
-    end)
-    |> Enum.filter(fn({_timestamp, _operation, key, _value}) ->
-      key == sought_key
-    end)
-    |> Enum.fetch(-1)
+    |> splited
+    |> Enum.find(&matches_key?(sought_key, &1))
+  end
+
+  defp break_line(line), do: line |> String.split(@line_separator) |> List.to_tuple
+  defp matches_key?(sought_key, {_timestamp, _operation, key, _value}), do: key == sought_key
+  defp non_empty?(line), do: String.strip(line) != ""
+
+  defp splited(stream) do
+    stream
+    |> Enum.filter(&non_empty?/1)
+    |> Enum.map(&break_line/1)
   end
 end
