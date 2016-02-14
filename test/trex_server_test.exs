@@ -1,9 +1,9 @@
-defmodule TrexTest do
+defmodule TrexServerTest do
   use ExUnit.Case
 
   setup do
-    Application.stop(:trex)
-    :ok = Application.start(:trex)
+    Application.stop(:trex_server)
+    :ok = Application.start(:trex_server)
   end
 
   setup do

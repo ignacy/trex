@@ -1,7 +1,7 @@
-defmodule Trex.WriteAheadLog do
+defmodule TrexServer.WriteAheadLog do
   defstruct logfile: "trex_data"
 
-  alias Trex.WriteAheadLog
+  alias TrexServer.WriteAheadLog
 
   @line_separator "\t"
 

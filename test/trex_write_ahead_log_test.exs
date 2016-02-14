@@ -1,7 +1,7 @@
-defmodule TrexWriteAheadLogTest  do
+defmodule TrexServerWriteAheadLogTest  do
   use ExUnit.Case
 
-  alias Trex.WriteAheadLog
+  alias TrexServer.WriteAheadLog
 
   test "put, set" do
     t = WriteAheadLog.new
