@@ -1,25 +1,16 @@
-defmodule TrexServer.Mixfile do
+defmodule Trex.Mixfile do
   use Mix.Project
 
   def project do
-    [
-      app: :trex_server,
-      version: "0.0.1",
-      elixir: "~> 1.2",
-      build_embedded: Mix.env == :prod,
-      start_permanent: Mix.env == :prod,
-      deps: deps
-    ]
-  end
-
-  def application do
-    [
-      applications: [:logger],
-      mod: {TrexServer, []}
-    ]
+    [apps_path: "apps",
+     build_embedded: Mix.env == :prod,
+     start_permanent: Mix.env == :prod,
+     deps: deps]
   end
 
   defp deps do
-    []
+    [
+      {:credo, "~> 0.3", only: [:dev, :test]}
+    ]
   end
 end
