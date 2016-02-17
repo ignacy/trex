@@ -7,7 +7,7 @@ defmodule TrexStorage do
     Agent.start_link(
     fn ->
       {:ok, file} = File.open("trex.dat", [:append])
-      memory = File.stream!("trex.dat", [:read], :line) |> read_current_state
+      memory = "trex.dat" |> File.stream!([:read], :line) |> read_current_state
 
       {file, memory}
     end,
