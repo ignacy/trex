@@ -1,5 +1,5 @@
 defmodule TrexServer.InMemoryAdapter do
-  def start_link do
+  def start_link(_args) do
     Agent.start_link(fn -> Map.new end, name: __MODULE__)
   end
 

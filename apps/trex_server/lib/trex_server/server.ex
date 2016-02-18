@@ -2,6 +2,7 @@ defmodule TrexServer.Server do
   alias TrexServer.{CommandEvaluator, Server.TaskSupervisor}
   require Logger
 
+  @storage_file    System.get_env("TREX_STORAGE_FILE") || "trex.dat"
   @storage_adapter Application.get_env(:trex_server, :storage_adapter)
 
   def accept(port) do
@@ -13,7 +14,7 @@ defmodule TrexServer.Server do
   end
 
   defp loop_acceptor(socket) do
-    @storage_adapter.start_link
+    @storage_adapter.start_link(@storage_file)
 
     {:ok, client} = :gen_tcp.accept(socket)
     {:ok, pid} = Task.Supervisor.start_child TaskSupervisor, fn ->
