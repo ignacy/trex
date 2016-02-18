@@ -1,11 +1,13 @@
 defmodule TrexStorage do
   @line_separator "\t"
 
-  def start_link do
+  def start_link(filename \\ "trex.dat") do
     Agent.start_link(
     fn ->
-      {:ok, file} = File.open("trex.dat", [:append])
-      memory = "trex.dat" |> File.stream!([:read], :line) |> read_current_state
+      {:ok, file} = File.open(filename, [:append])
+      memory = filename
+                |> File.stream!([:read], :line)
+                |> read_current_state
 
       {file, memory}
     end,
