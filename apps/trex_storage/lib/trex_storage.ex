@@ -1,6 +1,4 @@
 defmodule TrexStorage do
-  defstruct file:
-
   @line_separator "\t"
 
   def start_link do
