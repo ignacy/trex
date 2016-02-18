@@ -6,4 +6,4 @@ translations, elixir... => trex much creativity
 
 Run acceptance tests with:
 
-    ./run_tests
+    ./tests

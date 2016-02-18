@@ -3,4 +3,5 @@
 /deps
 erl_crash.dump
 *.ez
-trex.dat
+*.dat
+tmp/*.pid
