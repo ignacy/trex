@@ -25,6 +25,7 @@ defmodule Trex.Server do
     {msg, new_storage} =
     case read_line(socket) do
       {:ok, data} ->
+        Logger.info "Processing #{data}"
         CommandEvaluator.evaluate(data, @storage_adapter, storage)
       {:error, _} = err ->
         {err, storage}
