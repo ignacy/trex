@@ -15,12 +15,13 @@ defmodule TrexServerTest do
   test "server interaction", %{socket: socket} do
     assert send_and_recv(socket, "PING\r\n") == "PONG\r\n"
 
-    assert send_and_recv(socket, "NOT_IMPLEMENTED\r\n") == "UNKNOWN COMMAND\r\n"
-
     assert send_and_recv(socket, "SET\tSOMEKEY\tSOMEVALUE\r\n") == "OK\r\n"
     assert send_and_recv(socket, "GET\tSOMEKEY\r\n") == "SOMEVALUE\r\n"
 
     assert send_and_recv(socket, "LIST\r\n") =~ "SOMEKEY\r\n"
+
+    assert send_and_recv(socket, "NOT_IMPLEMENTED\r\n") == "Unknown command: not_implemented\r\n"
+    assert send_and_recv(socket, "GET\tKEY\t\ARG1\r\n") == "Wrong number of arguments - get takes VALUE argument\r\n"
   end
 
   defp send_and_recv(socket, command) do

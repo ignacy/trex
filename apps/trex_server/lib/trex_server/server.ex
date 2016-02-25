@@ -42,8 +42,8 @@ defmodule TrexServer.Server do
     :gen_tcp.send(socket, command <> "\r\n")
   end
 
-  defp write_line(socket, {:error, :unknown_command}) do
-    :gen_tcp.send(socket, "UNKNOWN COMMAND\r\n")
+  defp write_line(socket, {:command_error, command}) do
+    :gen_tcp.send(socket, command <> "\r\n")
   end
 
   defp write_line(_socket, {:error, :closed}) do
@@ -51,7 +51,8 @@ defmodule TrexServer.Server do
   end
 
   defp write_line(socket, {:error, error}) do
-    :gen_tcp.send(socket, "ERROR\r\n")
-    exit(error)
+    Logger.error(error)
+    :gen_tcp.send(socket, "Unknown error\r\n")
+    exit(:shutdown)
   end
 end
