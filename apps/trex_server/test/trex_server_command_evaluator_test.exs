@@ -8,8 +8,15 @@ defmodule TrexServerCommandEvaluatorTest do
   end
 
   test "command with wrong number of arguments" do
-    assert CommandEvaluator.evaluate(TrexServer.InMemoryAdapter, "GET\t\KEY\tOPS_IVE_ADDED_AN_ARGUMENT\r\n") \
-    == {:command_error, "Wrong number of arguments - get takes VALUE argument"}
+    assert CommandEvaluator.evaluate(TrexServer.InMemoryAdapter, "GET\t\KEY\tOPS_IVE_ADDED_AN_ARGUMENT\r\n") == \
+      {:command_error, "Wrong number of arguments - get takes VALUE argument"}
+    assert CommandEvaluator.evaluate(TrexServer.InMemoryAdapter, "SET\tKEY\r\n") == \
+      {:command_error, "Wrong number of arguments - set requires KEY VALUE arguments"}
+  end
+
+  test "some garbage" do
+    assert CommandEvaluator.evaluate(TrexServer.InMemoryAdapter, "SET\t\t\t\t\r\n") == \
+      {:command_error, "Wrong number of arguments - set requires KEY VALUE arguments"}
   end
 
   test "unknown command" do
