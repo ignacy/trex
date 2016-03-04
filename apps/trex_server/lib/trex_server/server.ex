@@ -46,7 +46,7 @@ defmodule TrexServer.Server do
   end
 
   defp write_line(socket, {:error, :unknown_command}) do
-    :gen_tcp.send(socket, "UNKNOWN COMMAND\r\n")
+    :gen_tcp.send(socket, "UNKNOWN_COMMAND\r\n")
   end
 
   defp write_line(_socket, {:error, :closed}) do
