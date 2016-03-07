@@ -6,7 +6,7 @@ defmodule TrexServer do
 
     children = [
       supervisor(Task.Supervisor, [[name: TrexServer.Server.TaskSupervisor]]),
-      worker(Task, [TrexServer.Server, :accept, [4040]])
+      worker(Task, [TrexServer.Server, :accept, []])
     ]
 
     opts = [strategy: :one_for_one, name: TrexServer.Server.Supervisor]
