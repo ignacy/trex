@@ -1,23 +1,38 @@
 defmodule TrexServer.InMemoryAdapter do
+  use GenServer
+  require Logger
+
   def start_link(_args) do
-    Agent.start_link(fn -> Map.new end, name: __MODULE__)
+    GenServer.start_link(__MODULE__, Map.new, [])
   end
 
-  def get(key) do
-    file = Agent.get(__MODULE__, fn state ->
-      state[key]
-    end)
+  def get(server, key) do
+    GenServer.call(server, {:get, key})
   end
 
-  def put(key, value) do
-    Agent.update(__MODULE__, fn state ->
-      Map.put(state, key, value)
-    end)
+  def put(server, key, value) do
+    GenServer.cast(server, {:put, key, value})
   end
 
-  def keys do
-    Agent.get(__MODULE__, fn state ->
-      Map.keys(state)
-    end)
+  def keys(server) do
+    GenServer.call(server, :keys)
+  end
+
+  def handle_call({:get, key}, _from, state) do
+    {:reply, Map.fetch(state, key), state}
+  end
+
+  def handle_call(:keys, _from, state) do
+    {:reply, Map.keys(state), state}
+  end
+
+  def handle_cast({:put, key, value}, state) do
+    {:noreply, Map.put(state, key, value)}
+  end
+
+  def terminate(reason, state) do
+    Logger.info "Asked to stop because #{inspect reason}"
+    Logger.info "State when stoping #{inspect state}"
+    {:ok, state}
   end
 end
