@@ -15,7 +15,8 @@ assert_eql() {
   if [ "$actual" = "$expected" ]; then
     echo PASSED
   else
-    echo "FAILED: EXPECTED=$expected ACTUAL=$actual"
+    echo "FAILED:"
+    echo "EXPECTED=$expected ACTUAL=$actual"
   fi
 }
 
