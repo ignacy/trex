@@ -1,7 +1,7 @@
-defmodule TrexServerCommandEvaluatorTest do
+defmodule TrexCommandEvaluatorTest do
   use ExUnit.Case
-  doctest TrexServer.CommandEvaluator
-  alias TrexServer.CommandEvaluator
+  doctest Trex.CommandEvaluator
+  alias Trex.CommandEvaluator
 
   test "ping" do
     assert CommandEvaluator.evaluate("PING\r\n") == {:ok, "PONG"}

@@ -1,4 +1,4 @@
-defmodule TrexStorage do
+defmodule Trex.Storage do
   use GenServer
 
   @line_separator "\t"
@@ -32,14 +32,6 @@ defmodule TrexStorage do
     GenServer.call(pid, :keys)
   end
 
-  def handle_call({:get, key}, _from, state) do
-    file = Agent.get(__MODULE__, fn {file, memory} ->
-      memory[key]
-    end)
-
-    {:reply, file, state}
-  end
-
   def handle_cast({:put, key, value}, state) do
     Agent.update(__MODULE__, fn {file, memory} ->
       IO.puts(file, wal_line(key, value))
@@ -49,8 +41,16 @@ defmodule TrexStorage do
     {:noreply, state}
   end
 
+  def handle_call({:get, key}, _from, state) do
+    file = Agent.get(__MODULE__, fn {_, memory} ->
+      memory[key]
+    end)
+
+    {:reply, file, state}
+  end
+
   def handle_call(:keys, _from, state) do
-    list = Agent.get(__MODULE__, fn {file, memory} ->
+    list = Agent.get(__MODULE__, fn {_, memory} ->
       Map.keys(memory)
     end)
 

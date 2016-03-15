@@ -1,16 +1,17 @@
-defmodule TrexServer.Server do
-  alias TrexServer.{CommandEvaluator, Server.TaskSupervisor}
+defmodule Trex.Server do
+  alias Trex.{CommandEvaluator, Server.TaskSupervisor}
   require Logger
 
   @port System.get_env("TREX_PORT") || 4040
   @storage_file    System.get_env("TREX_STORAGE_FILE") || "trex.dat"
-  @storage_adapter Application.get_env(:trex_server, :storage_adapter)
+  @storage_adapter Application.get_env(:trex, :storage_adapter)
 
   def accept do
     {:ok, socket} = :gen_tcp.listen(@port,
     [:binary, packet: :line, active: false, reuseaddr: true])
     Logger.info "Accepting connections on port #{@port}"
 
+    Logger.info "Storage is #{inspect @storage_adapter}"
     {:ok, storage_pid} = @storage_adapter.start_link(@storage_file)
     Process.register(storage_pid, :trex_storage)
     loop_acceptor(socket)
