@@ -3,7 +3,7 @@ defmodule Trex.InMemoryAdapter do
   require Logger
 
   def start_link(_args) do
-    GenServer.start_link(__MODULE__, Map.new, [])
+    GenServer.start_link(__MODULE__, Map.new, [name: :trex_storage])
   end
 
   def get(server, key) do

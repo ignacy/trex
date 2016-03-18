@@ -3,6 +3,7 @@ defmodule TrexStorageTest do
   doctest Trex.Storage
 
   setup do
+    Application.stop(:trex)
     filename = "trex_test.dat"
 
     File.touch(filename)

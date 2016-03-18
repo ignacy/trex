@@ -17,7 +17,7 @@ defmodule Trex.Storage do
   end
 
   def start_link(filename \\ "trex.dat") do
-    GenServer.start_link(__MODULE__, filename)
+    GenServer.start_link(__MODULE__, filename, [name: :trex_storage])
   end
 
   def get(pid, key) do
