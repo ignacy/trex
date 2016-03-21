@@ -1,4 +1,4 @@
-defmodule TrexServer.CommandEvaluator do
+defmodule Trex.CommandEvaluator do
   @message_separator "\t"
 
   def evaluate(line) do

@@ -1,6 +1,6 @@
 defmodule TrexStorageTest do
   use ExUnit.Case
-  doctest TrexStorage
+  doctest Trex.Storage
 
   setup do
     filename = "trex_test.dat"
@@ -15,10 +15,10 @@ defmodule TrexStorageTest do
   end
 
   test "put, set", context do
-    {:ok, storage} = TrexStorage.start_link(context[:filename])
+    {:ok, storage} = Trex.Storage.start_link(context[:filename])
 
-    TrexStorage.put(storage, "b", 4)
-    assert TrexStorage.get(storage, "b") == 4
-    assert TrexStorage.keys(storage) == ["b"]
+    Trex.Storage.put(storage, "b", 4)
+    assert Trex.Storage.get(storage, "b") == 4
+    assert Trex.Storage.keys(storage) == ["b"]
   end
 end

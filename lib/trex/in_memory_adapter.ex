@@ -1,4 +1,4 @@
-defmodule TrexServer.InMemoryAdapter do
+defmodule Trex.InMemoryAdapter do
   use GenServer
   require Logger
 
