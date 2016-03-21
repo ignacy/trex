@@ -2,7 +2,7 @@ defmodule Trex do
   require Logger
 
   @storage_adapter Application.get_env(:trex, :storage_adapter)
-  @storage_file    System.get_env("TREX_STORAGE_FILE") || "trex.dat"
+  @storage_file    System.get_env("TREX_STORAGE_FILE") || "trex.dets"
 
   def start(_type, _args) do
     import Supervisor.Spec
