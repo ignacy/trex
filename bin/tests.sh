@@ -13,10 +13,11 @@ assert_eql() {
   expected=$1; shift
   actual=$1; shift;
   if [ "$actual" = "$expected" ]; then
-    echo PASSED
+    echo "PASSED ${msg}"
   else
-    echo "FAILED:"
-    echo "EXPECTED=$expected ACTUAL=$actual"
+   echo "FAILED ${msg}"
+   echo "  EXPECTED ${expected}"
+   echo "  BUT GOT  ${actual}"
   fi
 }
 

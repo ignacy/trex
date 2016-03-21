@@ -1,43 +1,69 @@
 defmodule TrexStorage do
+  use GenServer
+
   @line_separator "\t"
 
-  def start_link(filename \\ "trex.dat") do
+  def init(filename) do
     Agent.start_link(
-    fn ->
-      {:ok, file} = File.open(filename, [:append])
-      memory = filename
-                |> File.stream!([:read], :line)
-                |> read_current_state
+      fn ->
+        {:ok, file} = File.open(filename, [:append])
+        memory = filename
+        |> File.stream!([:read], :line)
+        |> read_current_state
 
-      {file, memory}
-    end,
-    name: __MODULE__)
+        {file, memory}
+      end,
+      name: __MODULE__)
   end
 
-  def read_current_state(stream) do
-    stream
-    |> splitted
-    |> Enum.reduce(Map.new, fn {_, key, value}, acc ->
-      Map.put(acc, key, value)
-    end)
+  def start_link(filename \\ "trex.dat") do
+    GenServer.start_link(__MODULE__, filename)
   end
 
-  def get(key) do
+  def get(pid, key) do
+    GenServer.call(pid, {:get, key})
+  end
+
+  def put(pid, key, value) do
+    GenServer.cast(pid, {:put, key, value})
+  end
+
+  def keys(pid) do
+    GenServer.call(pid, :keys)
+  end
+
+  def handle_call({:get, key}, _from, state) do
     file = Agent.get(__MODULE__, fn {file, memory} ->
       memory[key]
     end)
+
+    {:reply, file, state}
   end
 
-  def put(key, value) do
+  def handle_cast({:put, key, value}, state) do
     Agent.update(__MODULE__, fn {file, memory} ->
       IO.puts(file, wal_line(key, value))
       {file, Map.put(memory, key, value)}
     end)
+
+    {:noreply, state}
   end
 
-  def keys do
-    Agent.get(__MODULE__, fn {file, memory} ->
+  def handle_call(:keys, _from, state) do
+    list = Agent.get(__MODULE__, fn {file, memory} ->
       Map.keys(memory)
+    end)
+
+    {:reply, list, state}
+  end
+
+  ### --- old code below
+
+  defp read_current_state(stream) do
+    stream
+    |> splitted
+    |> Enum.reduce(Map.new, fn {_, key, value}, acc ->
+      Map.put(acc, key, value)
     end)
   end
 

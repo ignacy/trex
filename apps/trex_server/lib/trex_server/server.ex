@@ -11,12 +11,12 @@ defmodule TrexServer.Server do
     [:binary, packet: :line, active: false, reuseaddr: true])
     Logger.info "Accepting connections on port #{@port}"
 
+    {:ok, storage_pid} = @storage_adapter.start_link(@storage_file)
+    Process.register(storage_pid, :trex_storage)
     loop_acceptor(socket)
   end
 
   defp loop_acceptor(socket) do
-    @storage_adapter.start_link(@storage_file)
-
     {:ok, client} = :gen_tcp.accept(socket)
     {:ok, pid} = Task.Supervisor.start_child TaskSupervisor, fn ->
       serve(client)
@@ -30,7 +30,7 @@ defmodule TrexServer.Server do
     case read_line(socket) do
       {:ok, data} ->
         Logger.info "Processing #{data}"
-        CommandEvaluator.evaluate(@storage_adapter, data)
+        CommandEvaluator.evaluate(data)
       err -> err
     end
 
@@ -43,7 +43,7 @@ defmodule TrexServer.Server do
   end
 
   defp write_line(socket, {:ok, command}) do
-    :gen_tcp.send(socket, command <> "\r\n")
+    :gen_tcp.send(socket, to_string(command) <> "\r\n")
   end
 
   defp write_line(socket, {:error, :unknown_command}) do
@@ -57,5 +57,11 @@ defmodule TrexServer.Server do
   defp write_line(socket, {:error, error}) do
     :gen_tcp.send(socket, "ERROR\r\n")
     exit(error)
+  end
+
+  defp write_line(socket, message) do
+    Logger.error "Unexpected command result #{message}"
+    :gen_tcp.send(socket, "#{inspect message}\r\n")
+    exit(:shutdown)
   end
 end

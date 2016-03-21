@@ -15,10 +15,10 @@ defmodule TrexStorageTest do
   end
 
   test "put, set", context do
-    TrexStorage.start_link(context[:filename])
+    {:ok, storage} = TrexStorage.start_link(context[:filename])
 
-    TrexStorage.put("b", 4)
-    assert TrexStorage.get("b") == 4
-    assert TrexStorage.keys == ["b"]
+    TrexStorage.put(storage, "b", 4)
+    assert TrexStorage.get(storage, "b") == 4
+    assert TrexStorage.keys(storage) == ["b"]
   end
 end
