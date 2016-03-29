@@ -5,7 +5,7 @@ defmodule Trex.Storage do
   @table_name :data
 
   def init(filename) do
-    :dets.open_file(@table_name, [file: filename, type: :bag])
+    :dets.open_file(@table_name, [file: filename, type: :set])
   end
 
   def start_link(filename \\ "trex.dets") do
@@ -31,7 +31,7 @@ defmodule Trex.Storage do
 
   def handle_call({:get, key}, _from, state) do
     case :dets.lookup(@table_name, key) do
-      [{k, v}|_tail] ->
+      [{_key, v}|_tail] ->
         {:reply, v, state}
       [] ->
         {:reply, nil, state}
@@ -39,9 +39,8 @@ defmodule Trex.Storage do
   end
 
   def handle_call(:keys, _from, state) do
-    all_values = :dets.match_object(@table_name, {:_, :_})
-    list = Enum.map(all_values, fn({key, _}) -> key end)
-    {:reply, list, state}
+    keys_list = :dets.select(@table_name, [{{:"$1", :"_"}, [], [:"$1"]}])
+    {:reply, keys_list, state}
   end
 
   def terminate(_reason, state) do
