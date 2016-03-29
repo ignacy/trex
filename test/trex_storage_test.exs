@@ -4,10 +4,7 @@ defmodule TrexStorageTest do
 
   setup do
     Application.stop(:trex)
-    filename = "trex_test.dat"
-
-    File.touch(filename)
-
+    filename = "trex_test.dets"
     on_exit fn ->
       File.rm(filename)
     end

@@ -2,21 +2,13 @@ defmodule Trex.Storage do
   use GenServer
 
   @line_separator "\t"
+  @table_name :data
 
   def init(filename) do
-    Agent.start_link(
-      fn ->
-        {:ok, file} = File.open(filename, [:append])
-        memory = filename
-        |> File.stream!([:read], :line)
-        |> read_current_state
-
-        {file, memory}
-      end,
-      name: __MODULE__)
+    :dets.open_file(@table_name, [file: filename, type: :set])
   end
 
-  def start_link(filename \\ "trex.dat") do
+  def start_link(filename \\ "trex.dets") do
     GenServer.start_link(__MODULE__, filename, [name: :trex_storage])
   end
 
@@ -33,51 +25,26 @@ defmodule Trex.Storage do
   end
 
   def handle_cast({:put, key, value}, state) do
-    Agent.update(__MODULE__, fn {file, memory} ->
-      IO.puts(file, wal_line(key, value))
-      {file, Map.put(memory, key, value)}
-    end)
-
+    :dets.insert(@table_name, {key, value})
     {:noreply, state}
   end
 
   def handle_call({:get, key}, _from, state) do
-    file = Agent.get(__MODULE__, fn {_, memory} ->
-      memory[key]
-    end)
-
-    {:reply, file, state}
+    case :dets.lookup(@table_name, key) do
+      [{_key, v}|_tail] ->
+        {:reply, v, state}
+      [] ->
+        {:reply, nil, state}
+    end
   end
 
   def handle_call(:keys, _from, state) do
-    list = Agent.get(__MODULE__, fn {_, memory} ->
-      Map.keys(memory)
-    end)
-
-    {:reply, list, state}
+    keys_list = :dets.select(@table_name, [{{:"$1", :"_"}, [], [:"$1"]}])
+    {:reply, keys_list, state}
   end
 
-  ### --- old code below
-
-  defp read_current_state(stream) do
-    stream
-    |> splitted
-    |> Enum.reduce(Map.new, fn {_, key, value}, acc ->
-      Map.put(acc, key, value)
-    end)
+  def terminate(_reason, state) do
+    :dets.close(state)
+    :ok
   end
-
-  defp wal_line(key, value) do
-    [:os.system_time(:seconds), key, value]
-    |> Enum.join(@line_separator)
-  end
-
-  defp splitted(stream) do
-    stream
-    |> Enum.filter(&non_empty?/1)
-    |> Enum.map(&break_line/1)
-  end
-
-  defp break_line(line), do: line |> String.split(@line_separator) |> List.to_tuple
-  defp non_empty?(line), do: String.strip(line) != ""
 end

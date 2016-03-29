@@ -25,7 +25,6 @@ cmd() {
   printf "$1\r\n" | nc 127.0.0.1 4040
 }
 
-touch trex_acceptance.dat
 TREX_STORAGE_FILE=trex_acceptance.dat nohup mix run --no-halt > /dev/null 2>&1 & echo $! > ./tmp/trex.pid
 
 until nc -z 127.0.0.1 4040; do
