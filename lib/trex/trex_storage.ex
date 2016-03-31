@@ -1,10 +1,12 @@
 defmodule Trex.Storage do
   use GenServer
+  require Logger
 
   @line_separator "\t"
   @table_name :data
 
   def init(filename) do
+    Process.flag(:trap_exit, true)
     :dets.open_file(@table_name, [file: filename, type: :set])
   end
 
@@ -43,7 +45,8 @@ defmodule Trex.Storage do
     {:reply, keys_list, state}
   end
 
-  def terminate(_reason, state) do
+  def terminate(reason, state) do
+    Logger.info "Closing storeage. Terminate reason: #{inspect reason}"
     :dets.close(state)
     :ok
   end

@@ -10,7 +10,7 @@ defmodule Trex do
     children = [
       supervisor(Task.Supervisor, [[name: Trex.Server.TaskSupervisor]]),
       worker(Task, [Trex.Server, :accept, []]),
-      worker(storage_adapter, [storage_file])
+      worker(storage_adapter, [storage_file], shutdown: 500)
     ]
 
     opts = [strategy: :one_for_one, name: Trex.Server.Supervisor]
