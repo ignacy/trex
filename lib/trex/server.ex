@@ -2,12 +2,13 @@ defmodule Trex.Server do
   alias Trex.{ConnectionHandler, Server.TaskSupervisor}
   require Logger
 
-  @port System.get_env("TREX_PORT") || 4040
 
   def accept do
-    {:ok, socket} = :gen_tcp.listen(@port,
+    port = System.get_env("TREX_PORT") || 4040
+
+    {:ok, socket} = :gen_tcp.listen(port,
     [:binary, packet: :line, active: false, reuseaddr: true])
-    Logger.info "Accepting connections on port #{@port}"
+    Logger.info "Accepting connections on port #{port}"
 
     loop(socket)
   end
