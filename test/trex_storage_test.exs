@@ -22,4 +22,14 @@ defmodule TrexStorageTest do
     assert Trex.Storage.get(storage, "b") == 4
     assert Trex.Storage.keys(storage) == ["b"]
   end
+
+  test "cleaning up after tests using monitor" do
+    {:ok, storage} = Trex.Storage.start_link(filename)
+
+    assert :dets.info(Trex.Storage.table_name) != :undefined
+
+    GenServer.stop(storage)
+
+    assert :dets.info(Trex.Storage.table_name) == :undefined
+  end
 end

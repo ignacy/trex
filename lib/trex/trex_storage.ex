@@ -7,6 +7,7 @@ defmodule Trex.Storage do
   def table_name, do: :data
 
   def init(filename) do
+    GenServer.start(Trex.StorageCleaner, self)
     :dets.open_file(table_name, [file: filename, type: :set])
   end
 
