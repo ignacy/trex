@@ -2,7 +2,7 @@ defmodule TrexServerClient do
   use GenServer
 
   def start_link do
-    GenServer.start_link(__MODULE__, nil)
+    GenServer.start_link(__MODULE__, nil, [name: :trex_client])
   end
 
   def init(_state) do
@@ -10,10 +10,10 @@ defmodule TrexServerClient do
     :gen_tcp.connect('127.0.0.1', 4040, opts)
   end
 
-  def command(pid, command) do
+  def command(command) do
     IO.inspect command
 
-    GenServer.call(pid, command)
+    GenServer.call(:trex_client, command)
   end
 
   def handle_call(command, from, socket) do
@@ -22,25 +22,25 @@ defmodule TrexServerClient do
 
     {:reply, msg, socket}
   end
-
-  def cmd(command) do
-    "#{command}\r\n"
-  end
 end
 
 defmodule TrexClient do
   def main(args) do
-    {:ok, pid} = TrexServerClient.start_link
-
-    loop(pid)
+    run(TrexServerClient)
   end
 
-  def loop(pid) do
+  def run(mod) do
+    mod.start_link
+
+    loop
+  end
+
+  def loop do
     command = IO.gets("127.0.0.1:4040> ")
 
-    reply = TrexServerClient.command(pid, String.replace(command, " ", "\t"))
+    reply = TrexServerClient.command(String.replace(command, " ", "\t"))
     IO.puts reply
 
-    loop(pid)
+    loop
   end
 end
