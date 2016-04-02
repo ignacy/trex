@@ -1,22 +1,20 @@
 defmodule TrexServerClient do
   use GenServer
 
-  def start_link do
-    GenServer.start_link(__MODULE__, nil, [name: :trex_client])
+  def start_link(host, port) do
+    GenServer.start_link(__MODULE__, {host, port}, [name: __MODULE__])
   end
 
-  def init(_state) do
+  def init({host, port}) do
     opts = [:binary, active: false]
-    :gen_tcp.connect('127.0.0.1', 4040, opts)
+    :gen_tcp.connect(host, port, opts)
   end
 
   def command(command) do
-    IO.inspect command
-
-    GenServer.call(:trex_client, command)
+    GenServer.call(__MODULE__, command)
   end
 
-  def handle_call(command, from, socket) do
+  def handle_call(command, _from, socket) do
     :ok = :gen_tcp.send(socket, command)
     {:ok, msg} = :gen_tcp.recv(socket, 0)
 
@@ -30,7 +28,11 @@ defmodule TrexClient do
   end
 
   def run(mod) do
-    mod.start_link
+    import Supervisor.Spec
+
+    children = [worker(TrexServerClient, ['127.0.0.1', 4040])]
+
+    Supervisor.start_link(children, strategy: :one_for_one)
 
     loop
   end
