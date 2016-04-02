@@ -3,4 +3,4 @@
 /deps
 erl_crash.dump
 *.ez
-trex_client
+trex_cli
