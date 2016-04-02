@@ -2,12 +2,10 @@ defmodule TrexServerClient do
   use GenServer
 
   def start_link(host, port) do
-    IO.inspect("try to restart")
     GenServer.start_link(__MODULE__, {host, port}, [name: __MODULE__])
   end
 
   def init({host, port}) do
-    IO.inspect("try to restart")
     Process.flag(:trap_exit, true)
 
     opts = [:binary, active: false]
@@ -15,18 +13,15 @@ defmodule TrexServerClient do
   end
 
   def command(command) do
-    case GenServer.call(__MODULE__, command) do
-      reply -> reply
-      otherwise -> "Connection error"
-    end
+    GenServer.call(__MODULE__, command)
   end
 
   def handle_call(command, _from, socket) do
     :gen_tcp.send(socket, command)
 
     case :gen_tcp.recv(socket, 0) do
-      {:ok, msg } -> {:reply, msg, socket}
-      {:error, reason } -> {:stop, :normal}
+      {:ok, msg} -> {:reply, msg, socket}
+      {:error, msg} -> {:stop, "Connection refused", :reply, socket}
     end
   end
 
@@ -37,34 +32,36 @@ defmodule TrexServerClient do
   end
 end
 
-defmodule TrexPrompt do
+defmodule TrexClient.Supervisor do
+  use Supervisor
+
   def start_link do
-    IO.inspect "Starting.."
-    loop
+    Supervisor.start_link(__MODULE__, :ok)
   end
 
-  defp loop do
-    command = IO.gets("127.0.0.1:4040> ")
+  def init(:ok) do
+    children = [
+      worker(TrexServerClient, ['127.0.0.1', 4040])
+    ]
 
-    reply = TrexServerClient.command(String.replace(command, " ", "\t"))
-
-    loop
+    supervise(children, strategy: :one_for_one, restart: :permament)
   end
 end
 
 defmodule TrexClient do
   def main(args) do
-    run(TrexServerClient)
+    TrexClient.Supervisor.start_link
+
+    loop
   end
 
-  def run(mod) do
-    import Supervisor.Spec
+  def loop do
+    command = IO.gets("127.0.0.1:4040> ")
 
-    children = [
-      worker(TrexServerClient, ['127.0.0.1', 4040]),
-      worker(TrexPrompt, [])
-    ]
+    reply = TrexServerClient.command(String.replace(command, " ", "\t"))
 
-    Supervisor.start_link(children, strategy: :one_for_one, restart: :permament)
+    IO.puts reply
+
+    loop
   end
 end
