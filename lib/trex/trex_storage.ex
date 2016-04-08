@@ -1,11 +1,14 @@
 defmodule Trex.Storage do
   use GenServer
+  require Logger
 
   @line_separator "\t"
-  @table_name :data
+
+  def table_name, do: :data
 
   def init(filename) do
-    :dets.open_file(@table_name, [file: filename, type: :set])
+    GenServer.start(Trex.StorageCleaner, self)
+    :dets.open_file(table_name, [file: filename, type: :set])
   end
 
   def start_link(filename \\ "trex.dets") do
@@ -25,12 +28,12 @@ defmodule Trex.Storage do
   end
 
   def handle_cast({:put, key, value}, state) do
-    :dets.insert(@table_name, {key, value})
+    :dets.insert(table_name, {key, value})
     {:noreply, state}
   end
 
   def handle_call({:get, key}, _from, state) do
-    case :dets.lookup(@table_name, key) do
+    case :dets.lookup(table_name, key) do
       [{_key, v}|_tail] ->
         {:reply, v, state}
       [] ->
@@ -39,12 +42,7 @@ defmodule Trex.Storage do
   end
 
   def handle_call(:keys, _from, state) do
-    keys_list = :dets.select(@table_name, [{{:"$1", :"_"}, [], [:"$1"]}])
+    keys_list = :dets.select(table_name, [{{:"$1", :"_"}, [], [:"$1"]}])
     {:reply, keys_list, state}
-  end
-
-  def terminate(_reason, state) do
-    :dets.close(state)
-    :ok
   end
 end
