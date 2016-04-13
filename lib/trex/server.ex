@@ -1,10 +1,11 @@
 defmodule Trex.Server do
-  alias Trex.{ConnectionHandler, Server.TaskSupervisor}
+  alias Trex.{ConnectionHandler, Server.TaskSupervisor, Storage}
   require Logger
-
 
   def accept do
     port = System.get_env("TREX_PORT") || 4040
+
+    Storage.start
 
     {:ok, socket} = :gen_tcp.listen(port,
     [:binary, packet: :line, active: false, reuseaddr: true])

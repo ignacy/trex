@@ -1,2 +1,4 @@
-%{"bunt": {:hex, :bunt, "0.1.4"},
-  "credo": {:hex, :credo, "0.3.1"}}
+%{"amnesia": {:git, "https://github.com/meh/amnesia.git", "63f6aef1888b15669f80b5e06af32d151f23e4ff", []},
+  "bunt": {:hex, :bunt, "0.1.4"},
+  "credo": {:hex, :credo, "0.3.1"},
+  "exquisite": {:hex, :exquisite, "0.1.6"}}

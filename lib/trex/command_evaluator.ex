@@ -1,4 +1,6 @@
 defmodule Trex.CommandEvaluator do
+  alias Trex.{Storage}
+
   @message_separator "\t"
 
   def evaluate(line) do
@@ -20,19 +22,16 @@ defmodule Trex.CommandEvaluator do
   end
 
   defp _evaluate({:get, key}) do
-    case GenServer.call(:trex_storage, {:get, key}) do
-      {:ok, val} -> {:ok, val}
-      v -> {:ok, v}
-    end
+    Storage.get(key)
   end
 
   defp _evaluate({:set, key, value}) do
-    GenServer.cast(:trex_storage, {:put, key, value})
+    Storage.set(key, value)
     {:ok, "OK"}
   end
 
   defp _evaluate(:list) do
-    keys = GenServer.call(:trex_storage, :keys)
+    keys = Storage.list_keys
     {:ok, keys |> Enum.join(",")}
   end
 

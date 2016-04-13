@@ -20,7 +20,8 @@ defmodule Trex.Mixfile do
 
   defp deps do
     [
-      {:credo, "~> 0.3", only: [:dev, :test]}
+      {:credo, "~> 0.3", only: [:dev, :test]},
+      {:amnesia, "~> 0.2.0", github: "meh/amnesia"}
     ]
   end
 end
