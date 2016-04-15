@@ -13,15 +13,16 @@ defmodule Trex.Mixfile do
 
   def application do
     [
-      applications: [:logger],
+      applications: [:logger, :amnesia],
       mod: {Trex, []}
     ]
   end
 
   defp deps do
     [
+      {:amnesia, "~> 0.2.0", github: "meh/amnesia"},
       {:credo, "~> 0.3", only: [:dev, :test]},
-      {:amnesia, "~> 0.2.0", github: "meh/amnesia"}
+      {:exrm, "~> 1.0.3", only: [:dev]}
     ]
   end
 end
