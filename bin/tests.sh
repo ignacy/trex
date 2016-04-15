@@ -1,8 +1,10 @@
 #!/bin/bash
 
+export MIX_ENV=prod
+
 cleanup() {
-  kill -9 $(cat ./tmp/trex.pid)
-  rm ./tmp/trex.pid
+  ./rel/trex/bin/trex stop
+  mix release.clean
 }
 
 trap cleanup EXIT
@@ -24,7 +26,9 @@ cmd() {
   printf "$1\r\n" | nc 127.0.0.1 4040
 }
 
-nohup mix run --no-halt > /dev/null 2>&1 & echo $! > ./tmp/trex.pid
+mix compile
+echo Y | mix release
+./rel/trex/bin/trex start
 
 until nc -z 127.0.0.1 4040; do
   sleep 0.1
