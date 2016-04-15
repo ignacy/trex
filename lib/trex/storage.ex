@@ -9,6 +9,11 @@ defmodule Trex.Storage do
     Database.wait
   end
 
+  def stop do
+    Amnesia.stop
+    Amnesia.Schema.destroy
+  end
+
   def first do
     Amnesia.transaction do
       Translation.first()
@@ -32,8 +37,9 @@ defmodule Trex.Storage do
 
   def list_keys do
     Amnesia.transaction do
-      selection = Translation.where key != nil, select: [key]
-      Amnesia.Selection.values(selection)
+      Translation.where(key != nil, select: [key])
+      |>Amnesia.Selection.values
+      |>List.flatten
     end
   end
 end
