@@ -6,3 +6,4 @@ erl_crash.dump
 *.dat
 tmp/*.pid
 /*.dets
+/rel

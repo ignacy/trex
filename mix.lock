@@ -1,4 +1,11 @@
 %{"amnesia": {:git, "https://github.com/meh/amnesia.git", "63f6aef1888b15669f80b5e06af32d151f23e4ff", []},
+  "bbmustache": {:hex, :bbmustache, "1.0.4"},
   "bunt": {:hex, :bunt, "0.1.4"},
+  "cf": {:hex, :cf, "0.2.1"},
   "credo": {:hex, :credo, "0.3.1"},
-  "exquisite": {:hex, :exquisite, "0.1.6"}}
+  "erlware_commons": {:hex, :erlware_commons, "0.19.0"},
+  "exquisite": {:hex, :exquisite, "0.1.6"},
+  "exrm": {:hex, :exrm, "1.0.3"},
+  "getopt": {:hex, :getopt, "0.8.2"},
+  "providers": {:hex, :providers, "1.6.0"},
+  "relx": {:hex, :relx, "3.18.0"}}
