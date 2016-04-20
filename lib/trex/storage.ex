@@ -39,8 +39,8 @@ defmodule Trex.Storage do
     Amnesia.transaction do
       translation = Translation.where(key != nil, select: [key])
       translation
-      |>Amnesia.Selection.values
-      |>List.flatten
+      |> Amnesia.Selection.values
+      |> List.flatten
     end
   end
 end
