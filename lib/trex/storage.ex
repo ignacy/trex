@@ -37,7 +37,8 @@ defmodule Trex.Storage do
 
   def list_keys do
     Amnesia.transaction do
-      Translation.where(key != nil, select: [key])
+      translation = Translation.where(key != nil, select: [key])
+      translation
       |>Amnesia.Selection.values
       |>List.flatten
     end
