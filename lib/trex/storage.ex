@@ -1,4 +1,17 @@
 defmodule Trex.Storage do
+ @moduledoc """
+  Provides high level API for item storage.
+
+  ## Examples
+
+      iex> Storage.set("foo", "bar")
+      iex> Storage.get("foo")
+      {:ok, "bar"}
+      iex> Storage.list_keys
+      ["foo"]
+
+  """
+
   use Trex.Database
   use Amnesia
 
