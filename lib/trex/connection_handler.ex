@@ -1,4 +1,8 @@
 defmodule Trex.ConnectionHandler do
+  @moduledoc """
+  Provides functions for processing incomming connections.
+  """
+
   alias Trex.{CommandEvaluator}
   require Logger
 

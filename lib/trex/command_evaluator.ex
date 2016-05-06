@@ -1,4 +1,8 @@
 defmodule Trex.CommandEvaluator do
+  @moduledoc """
+  Provides functions for processing received commands.
+  """
+
   alias Trex.{Storage}
 
   @message_separator "\t"

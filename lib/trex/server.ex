@@ -1,4 +1,8 @@
 defmodule Trex.Server do
+  @moduledoc """
+  Provides code for seting up server and accepting connections.
+  """
+
   alias Trex.{ConnectionHandler, Server.TaskSupervisor, Storage}
   require Logger
 

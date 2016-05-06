@@ -1,4 +1,17 @@
 defmodule Trex.Storage do
+ @moduledoc """
+  Provides high level API for item storage.
+
+  ## Examples
+
+      iex> Storage.set("foo", "bar")
+      iex> Storage.get("foo")
+      {:ok, "bar"}
+      iex> Storage.list_keys
+      ["foo"]
+
+  """
+
   use Trex.Database
   use Amnesia
 
@@ -37,9 +50,10 @@ defmodule Trex.Storage do
 
   def list_keys do
     Amnesia.transaction do
-      Translation.where(key != nil, select: [key])
-      |>Amnesia.Selection.values
-      |>List.flatten
+      translation = Translation.where(key != nil, select: [key])
+      translation
+      |> Amnesia.Selection.values
+      |> List.flatten
     end
   end
 end
