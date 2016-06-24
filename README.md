@@ -44,7 +44,7 @@ FOO\r
 
 ### Using Trex as an i18n backend
 
-You can find client gem with all the details here [trexrb][https://github.com/ignacy/trexrb]
+You can find client gem with all the details here [trexrb](https://github.com/ignacy/trexrb)
 
 ### Accessing Trex data using TrexCli
 
