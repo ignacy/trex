@@ -3,27 +3,16 @@ defmodule Trex.Server do
   Provides code for seting up server and accepting connections.
   """
 
-  alias Trex.{ConnectionHandler, Server.TaskSupervisor, Storage}
+  alias Trex.{Storage, Handler}
   require Logger
 
   def accept do
-    port = System.get_env("TREX_PORT") || 4040
-
     Storage.start
+    opts = [port: System.get_env("TREX_PORT") || 4040]
 
-    {:ok, socket} = :gen_tcp.listen(port,
-    [:binary, packet: :line, active: false, reuseaddr: true])
-    Logger.info "Accepting connections on port #{port}"
-
-    loop(socket)
-  end
-
-  defp loop(socket) do
-    {:ok, client} = :gen_tcp.accept(socket)
-    {:ok, pid} = Task.Supervisor.start_child TaskSupervisor, fn ->
-      ConnectionHandler.serve(client)
+    case :ranch.start_listener(:Trex, 100, :ranch_tcp, opts, Handler, []) do
+      {:ok, _} -> Logger.info "Application started"
+      {:error, _} -> Logger.info "Started with problems"
     end
-    :ok = :gen_tcp.controlling_process(client, pid)
-    loop(socket)
   end
 end
