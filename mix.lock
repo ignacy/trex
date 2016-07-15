@@ -3,10 +3,10 @@
   "bunt": {:hex, :bunt, "0.1.4", "a1d555a2f50d5f402a579ca08cfdc8afe15d85494bd729c9b3a46ac7266d0081", [:mix], []},
   "cf": {:hex, :cf, "0.2.1", "69d0b1349fd4d7d4dc55b7f407d29d7a840bf9a1ef5af529f1ebe0ce153fc2ab", [:rebar3], []},
   "credo": {:hex, :credo, "0.3.1", "c50a0c2487aa1086531eab672b5dd0baf18652592f407e36d3ca3ef22da8eea1", [:mix], [{:bunt, "~> 0.1.4", [hex: :bunt, optional: false]}]},
-  "erlware_commons": {:hex, :erlware_commons, "0.19.0", "7b43caf2c91950c5f60dc20451e3c3afba44d3d4f7f27bcdc52469285a5a3e70", [:rebar3], [{:cf, "0.2.1", [hex: :cf, optional: false]}]},
+  "erlware_commons": {:hex, :erlware_commons, "0.21.0", "a04433071ad7d112edefc75ac77719dd3e6753e697ac09428fc83d7564b80b15", [:rebar3], [{:cf, "0.2.1", [hex: :cf, optional: false]}]},
   "exquisite": {:hex, :exquisite, "0.1.6", "3862fc287ac4247298a8018da6b226c08d08515134e74e6638a9e1236576e745", [:mix], []},
-  "exrm": {:hex, :exrm, "1.0.3", "117d3d89109ca893696059811202534a4e3286a207616765add0379058687839", [:mix], [{:relx, "~> 3.5", [hex: :relx, optional: false]}]},
+  "exrm": {:hex, :exrm, "1.0.6", "f708fc091dcacb93c1da58254a1ab34166d5ac3dca162877e878fe5d7a9e9dce", [:mix], [{:relx, "~> 3.5", [hex: :relx, optional: false]}]},
   "getopt": {:hex, :getopt, "0.8.2", "b17556db683000ba50370b16c0619df1337e7af7ecbf7d64fbf8d1d6bce3109b", [:rebar], []},
   "providers": {:hex, :providers, "1.6.0", "db0e2f9043ae60c0155205fcd238d68516331d0e5146155e33d1e79dc452964a", [:rebar3], [{:getopt, "0.8.2", [hex: :getopt, optional: false]}]},
   "ranch": {:hex, :ranch, "1.2.1", "a6fb992c10f2187b46ffd17ce398ddf8a54f691b81768f9ef5f461ea7e28c762", [:make], []},
-  "relx": {:hex, :relx, "3.18.0", "02a27d8250c7f5c7a19f3ec60e15311a877ae4a7b76f4588ec03525c7de1842d", [:rebar3], [{:providers, "1.6.0", [hex: :providers, optional: false]}, {:getopt, "0.8.2", [hex: :getopt, optional: false]}, {:erlware_commons, "0.19.0", [hex: :erlware_commons, optional: false]}, {:cf, "0.2.1", [hex: :cf, optional: false]}, {:bbmustache, "1.0.4", [hex: :bbmustache, optional: false]}]}}
+  "relx": {:hex, :relx, "3.20.0", "b515b8317d25b3a1508699294c3d1fa6dc0527851dffc87446661bce21a36710", [:rebar3], [{:providers, "1.6.0", [hex: :providers, optional: false]}, {:getopt, "0.8.2", [hex: :getopt, optional: false]}, {:erlware_commons, "0.21.0", [hex: :erlware_commons, optional: false]}, {:cf, "0.2.1", [hex: :cf, optional: false]}, {:bbmustache, "1.0.4", [hex: :bbmustache, optional: false]}]}}

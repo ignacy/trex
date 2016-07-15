@@ -22,7 +22,7 @@ defmodule Trex.Mixfile do
     [
       {:amnesia, "~> 0.2.0", github: "meh/amnesia"},
       {:credo, "~> 0.3", only: [:dev, :test]},
-      {:exrm, "~> 1.0.3"},
+      {:exrm, "~> 1.0.6"},
       {:ranch, "~> 1.2.1"}
     ]
   end
