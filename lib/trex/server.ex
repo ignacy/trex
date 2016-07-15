@@ -2,7 +2,7 @@ defmodule Trex.Server do
   use GenServer
 
   @moduledoc """
-  Provides code for seting up server and accepting connections.
+  Provides code for seting up Storge and TCP connection pool.
   """
 
   alias Trex.{Storage, Handler}
