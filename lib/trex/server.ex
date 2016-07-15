@@ -18,18 +18,16 @@ defmodule Trex.Server do
     Storage.start
     opts = [port: System.get_env("TREX_PORT") || 4040]
 
-    Logger.info "Starting ranch pool"
-
     case :ranch.start_listener(:Trex, 100, :ranch_tcp, opts, Handler, []) do
       {:ok, _} -> Logger.info "Application started"
-      {:error, _} -> Logger.info "Started with problems"
+      {:error, reason} -> Logger.error "Started with problems: #{inspect reason}"
     end
 
     {:ok, %{}}
   end
 
-  def handle_info(anything, state) do
-    Logger.info "Server received #{IO.inspect(anything)}"
+  def handle_info(message, state) do
+    Logger.info "Server received #{inspect message}"
     {:noreply, state}
   end
 end
