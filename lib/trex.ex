@@ -14,10 +14,9 @@ defmodule Trex do
 
     children = [
       supervisor(Task.Supervisor, [[name: Trex.Server.TaskSupervisor]]),
-      worker(Task, [Trex.Server, :accept, []])
+      worker(Trex.Server, [])
     ]
 
-    opts = [strategy: :one_for_one, name: Trex.Server.Supervisor]
-    Supervisor.start_link(children, opts)
+    Supervisor.start_link(children, strategy: :one_for_one)
   end
 end

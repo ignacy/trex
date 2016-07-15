@@ -16,6 +16,11 @@ defmodule Trex.Handler do
     case transport.recv(socket, 0, 5000) do
       {:ok, data} ->
         write_line(transport, socket, CommandEvaluator.evaluate(data))
+
+        # If you want to run redis-benchmark you need this:
+        # write_line(transport, socket, {:ok, "+PONG"})
+        # we probably want to adjust the format we're handling here
+
         loop(socket, transport)
       _ ->
         :ok = transport.close(socket)
