@@ -28,11 +28,11 @@ defmodule Trex.Handler do
   end
 
   defp write_line(transport, socket, {:ok, command}) do
-    transport.send(socket, to_string(command) <> "\r\n")
+    transport.send(socket, "+" <> to_string(command) <> "\r\n")
   end
 
   defp write_line(transport, socket, {:error, :unknown_command}) do
-    transport.send(socket, "UNKNOWN_COMMAND\r\n")
+    transport.send(socket, "-UNKNOWN_COMMAND\r\n")
   end
 
   defp write_line(_transport, _socket, {:error, :closed}) do
@@ -40,12 +40,12 @@ defmodule Trex.Handler do
   end
 
   defp write_line(transport, socket, {:error, error}) do
-    transport.send(socket, "ERROR\r\n")
+    transport.send(socket, "-ERROR\r\n")
     exit(error)
   end
 
   defp write_line(transport, socket, message) do
-    transport.send(socket, "#{inspect message}\r\n")
+    transport.send(socket, "-#{inspect message}\r\n")
     exit(:shutdown)
   end
 end
