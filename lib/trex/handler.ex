@@ -7,7 +7,7 @@ defmodule Trex.Handler do
     {:ok, pid}
   end
 
-  def init(ref, socket, transport, _Opts = []) do
+  def init(ref, socket, transport, _opts = []) do
     :ok = :ranch.accept_ack(ref)
     loop(socket, transport)
   end
