@@ -16,6 +16,7 @@ defmodule TrexCLI do
     command = IO.gets("#{host}:#{port}> ")
 
     reply = command
+    |> String.trim_trailing
     |> String.replace(" ", "\t")
     |> TrexCLI.Client.command
 

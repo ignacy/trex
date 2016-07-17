@@ -18,11 +18,11 @@ defmodule TrexCLI.Client do
   end
 
   def handle_call(command, _from, socket) do
-    :gen_tcp.send(socket, command)
+    :gen_tcp.send(socket, command <> "\r\n")
 
     case :gen_tcp.recv(socket, 0) do
       {:ok, msg} -> {:reply, msg, socket}
-      {:error, msg} -> {:stop, "Connection refused", :reply, socket}
+      {:error, msg} -> {:stop, "Connection refused #{inspect msg}", :reply, socket}
     end
   end
 
